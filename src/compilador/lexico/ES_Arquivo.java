@@ -111,6 +111,7 @@ public class ES_Arquivo {
                         lexema += caracterAtual;
                     } else if (isEspaco(caracterAtual) || isDigito(caracterAtual) || isLetra(caracterAtual)) {
                         estado = 6;
+                        retroceder();
                     } else {
                         throw new LexicoException("Operador de atribuição não reconhecido");
                     }
@@ -140,6 +141,7 @@ public class ES_Arquivo {
                 case 9:
                     if (isEspaco(caracterAtual) || isDigito(caracterAtual) || isLetra(caracterAtual)) {
                         estado = 10;
+                        retroceder();
                     } else if ((lexema.equals("/") && caracterAtual == '*') || (lexema.equals("*") && caracterAtual == '/')) {
                         estado = 0;
                         lexema += caracterAtual;
@@ -189,7 +191,8 @@ public class ES_Arquivo {
     }
 
     private boolean isPontuacao(char c) {
-        return c == '(' || c == ')' || c == ',' || c == ';';
+        return c == '(' || c == ')' || c == ',' || c == ';' || c == ':' || c == '[' || c == ']' || c == '\\'
+                || c == '|' || c == '"' || c == '\'' || c == '!' || c == '?';
     }
 
     private boolean isEspaco(char c) {

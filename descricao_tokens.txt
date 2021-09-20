@@ -2,9 +2,13 @@ IDENTIFICADORES
     (a..z|A..Z|_)(a..z|A..Z|0..9|_)*
 CONSTANTES
     (0..9)+
-PONTUACAO
-    . | , | ; | : | ( | ) | [ | ] | { | } | / | \ | | |
-OP_RELACIONAIS
-    == | <> | < | > | <= | >=
 OP_ATRIBUICAO
     =
+OP_RELACIONAIS
+    == | <> | < | > | <= | >=
+OP_ARITIMETICOs
+    + | - | * | /
+PONTUACAO
+    . | , | ; | : | ( | ) | [ | ] | \ | | | " | ' | ! | ? 
+IGNORAR
+    comentários /* */ e { }
