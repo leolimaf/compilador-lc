@@ -39,15 +39,20 @@ public class ES_Arquivo {
             caracterAtual = proxCaracter();
             switch (estado) {
                 case 0:
-                    if (lexema.startsWith("/*") && lexema.endsWith("*/") || lexema.startsWith("{") && lexema.endsWith("}")){
+                    if (lexema.startsWith("/*") && lexema.endsWith("*/") || lexema.startsWith("{") && lexema.endsWith("}")) {
                         estado = 0;
                         lexema = "";
-                    } else if (lexema.startsWith("/*") || lexema.endsWith("*/")){
+                        retroceder();
+                    } else if (lexema.startsWith("/*") || lexema.endsWith("*/")) {
                         lexema += caracterAtual;
-                        continue;
-                    } else if (caracterAtual == '{' || (lexema.startsWith("{") || lexema.endsWith("}"))){
+                    } else if (caracterAtual == '{' || (lexema.startsWith("{") || lexema.endsWith("}"))) {
                         lexema += caracterAtual;
-                        continue;
+                    } else if (lexema.startsWith("\"") && lexema.endsWith("\"") && lexema.length() > 1) {
+                        retroceder();
+                        estado = 4;
+                    } else if (lexema.startsWith("\"")) {
+                        estado = 0;
+                        lexema += caracterAtual;
                     } else if (isLetra(caracterAtual)) {
                         estado = 1;
                         lexema += caracterAtual;
@@ -63,9 +68,14 @@ public class ES_Arquivo {
                     } else if (isOperadorAritmetico(caracterAtual)) {
                         estado = 9;
                         lexema += caracterAtual;
-                    } else if (isPontuacao(caracterAtual)){
-                        estado = 11;
-                        lexema += caracterAtual;
+                    } else if (isPontuacao(caracterAtual)) {
+                        if (caracterAtual == '\"') {
+                            estado = 0;
+                            lexema += caracterAtual;
+                        } else {
+                            estado = 11;
+                            lexema += caracterAtual;
+                        }
                     } else if (isEspaco(caracterAtual)) {
                         estado = 0;
                     } else
@@ -75,7 +85,7 @@ public class ES_Arquivo {
                     if (isLetra(caracterAtual) || isDigito(caracterAtual)) {
                         estado = 1;
                         lexema += caracterAtual;
-                    } else if (isEspaco(caracterAtual) || isOperador(caracterAtual) || isPontuacao(caracterAtual)) {
+                    } else if (isEspaco(caracterAtual) || isOperador(caracterAtual) || isPontuacao(caracterAtual) || isComentario(caracterAtual)) {
                         estado = 2;
                         retroceder();
                     } else {
@@ -134,12 +144,12 @@ public class ES_Arquivo {
                     } else if (isOperadorAtribuicao(caracterAtual) || (lexema.equals("<") && caracterAtual == '>')) {
                         estado = 7;
                         lexema += caracterAtual;
-                    }  else {
+                    } else {
                         throw new LexicoException("Operador relacional não reconhecido");
                     }
                     break;
                 case 9:
-                    if (isEspaco(caracterAtual) || isDigito(caracterAtual) || isLetra(caracterAtual)) {
+                    if (isEspaco(caracterAtual) || isDigito(caracterAtual) || isLetra(caracterAtual) || caracterAtual == '\"') {
                         estado = 10;
                         retroceder();
                     } else if ((lexema.equals("/") && caracterAtual == '*') || (lexema.equals("*") && caracterAtual == '/')) {
@@ -164,6 +174,10 @@ public class ES_Arquivo {
             }
         }
         return null;
+    }
+
+    private boolean isComentario(char c) {
+        return c == '{' || c == '}';
     }
 
     private boolean isDigito(char c) {
