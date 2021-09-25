@@ -2,7 +2,6 @@ package compilador.lexico;
 
 import compilador.erros.LexicoException;
 
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -19,7 +18,7 @@ public class ES_Arquivo {
 
     public void abreArquivoEntrada(String nomeArqEntrada) {
         try {
-            String conteudo = new String(Files.readAllBytes(Paths.get(nomeArqEntrada)), StandardCharsets.UTF_8);
+            String conteudo = Files.readString(Paths.get(nomeArqEntrada));
             itensConteudo = conteudo.toCharArray();
             posicao = 0;
         } catch (Exception e) {
@@ -31,7 +30,7 @@ public class ES_Arquivo {
     public RegistroLexico obterRegistroLexico() {
         char caracterAtual;
         RegistroLexico registroLexico;
-        String lexema = "";
+        StringBuilder lexema = new StringBuilder();
         if (isFimDoArq())
             return null;
         estado = 0;
@@ -39,52 +38,54 @@ public class ES_Arquivo {
             caracterAtual = proxCaracter();
             switch (estado) {
                 case 0:
-                    if (lexema.startsWith("/*") && lexema.endsWith("*/") || lexema.startsWith("{") && lexema.endsWith("}")) {
-                        estado = 0;
-                        lexema = "";
+                    if (lexema.toString().startsWith("/*") && lexema.toString().endsWith("*/") || lexema.toString().startsWith("{") && lexema.toString().endsWith("}")) {
+                        lexema = new StringBuilder();
                         retroceder();
-                    } else if (lexema.startsWith("/*") || lexema.endsWith("*/")) {
-                        lexema += caracterAtual;
-                    } else if (caracterAtual == '{' || (lexema.startsWith("{") || lexema.endsWith("}"))) {
-                        lexema += caracterAtual;
-                    } else if (lexema.startsWith("\"") && lexema.endsWith("\"") && lexema.length() > 1) {
+                    } else if (lexema.toString().startsWith("/*") || lexema.toString().endsWith("*/")) {
+                        lexema.append(caracterAtual);
+                    } else if (caracterAtual == '{' || (lexema.toString().startsWith("{") || lexema.toString().endsWith("}"))) {
+                        lexema.append(caracterAtual);
+                    } else if (lexema.toString().startsWith("\"") && lexema.toString().endsWith("\"") && lexema.length() > 1) {
                         retroceder();
                         estado = 4;
-                    } else if (lexema.startsWith("\"")) {
+                    } else if (lexema.toString().startsWith("\"")) {
+                        if (caracterAtual == '\n'){
+                            throw new LexicoException("Strings não podem conter quebras de linha");
+                        }
                         estado = 0;
-                        lexema += caracterAtual;
+                        lexema.append(caracterAtual);
                     } else if (isLetra(caracterAtual)) {
                         estado = 1;
-                        lexema += caracterAtual;
+                        lexema.append(caracterAtual);
                     } else if (isDigito(caracterAtual)) {
                         estado = 3;
-                        lexema += caracterAtual;
+                        lexema.append(caracterAtual);
                     } else if (isOperadorAtribuicao(caracterAtual)) {
                         estado = 5;
-                        lexema += caracterAtual;
+                        lexema.append(caracterAtual);
                     } else if (isOperadorRelacional(caracterAtual)) {
                         estado = 8;
-                        lexema += caracterAtual;
+                        lexema.append(caracterAtual);
                     } else if (isOperadorAritmetico(caracterAtual)) {
                         estado = 9;
-                        lexema += caracterAtual;
+                        lexema.append(caracterAtual);
                     } else if (isPontuacao(caracterAtual)) {
                         if (caracterAtual == '\"') {
                             estado = 0;
-                            lexema += caracterAtual;
                         } else {
                             estado = 11;
-                            lexema += caracterAtual;
                         }
+                        lexema.append(caracterAtual);
                     } else if (isEspaco(caracterAtual)) {
                         estado = 0;
-                    } else
+                    } else{
                         throw new LexicoException("Símbolo não reconhecido");
+                    }
                     break;
                 case 1:
                     if (isLetra(caracterAtual) || isDigito(caracterAtual)) {
                         estado = 1;
-                        lexema += caracterAtual;
+                        lexema.append(caracterAtual);
                     } else if (isEspaco(caracterAtual) || isOperador(caracterAtual) || isPontuacao(caracterAtual) || isComentario(caracterAtual)) {
                         estado = 2;
                         retroceder();
@@ -95,13 +96,13 @@ public class ES_Arquivo {
                 case 2:
                     registroLexico = new RegistroLexico();
                     registroLexico.setToken(RegistroLexico.TK_IDENTIFICADOR);
-                    registroLexico.setLexema(lexema);
+                    registroLexico.setLexema(lexema.toString());
                     retroceder();
                     return registroLexico;
                 case 3:
                     if (isDigito(caracterAtual)) {
                         estado = 3;
-                        lexema += caracterAtual;
+                        lexema.append(caracterAtual);
                     } else if (!isLetra(caracterAtual)) {
                         estado = 4;
                         retroceder();
@@ -112,13 +113,13 @@ public class ES_Arquivo {
                 case 4:
                     registroLexico = new RegistroLexico();
                     registroLexico.setToken(RegistroLexico.TK_CONSTANTE);
-                    registroLexico.setLexema(lexema);
+                    registroLexico.setLexema(lexema.toString());
                     retroceder();
                     return registroLexico;
                 case 5:
                     if (isOperadorAtribuicao(caracterAtual)) {
                         estado = 7;
-                        lexema += caracterAtual;
+                        lexema.append(caracterAtual);
                     } else if (isEspaco(caracterAtual) || isDigito(caracterAtual) || isLetra(caracterAtual)) {
                         estado = 6;
                         retroceder();
@@ -129,21 +130,21 @@ public class ES_Arquivo {
                 case 6:
                     registroLexico = new RegistroLexico();
                     registroLexico.setToken(RegistroLexico.TK_OP_ATRIBUICAO);
-                    registroLexico.setLexema(lexema);
+                    registroLexico.setLexema(lexema.toString());
                     retroceder();
                     return registroLexico;
                 case 7:
                     registroLexico = new RegistroLexico();
                     registroLexico.setToken(RegistroLexico.TK_OP_RELACIONAL);
-                    registroLexico.setLexema(lexema);
+                    registroLexico.setLexema(lexema.toString());
                     retroceder();
                     return registroLexico;
                 case 8:
                     if (isEspaco(caracterAtual) || isDigito(caracterAtual) || isLetra(caracterAtual)) {
                         estado = 7;
-                    } else if (isOperadorAtribuicao(caracterAtual) || (lexema.equals("<") && caracterAtual == '>')) {
+                    } else if (isOperadorAtribuicao(caracterAtual) || (lexema.toString().equals("<") && caracterAtual == '>')) {
                         estado = 7;
-                        lexema += caracterAtual;
+                        lexema.append(caracterAtual);
                     } else {
                         throw new LexicoException("Operador relacional não reconhecido");
                     }
@@ -152,9 +153,9 @@ public class ES_Arquivo {
                     if (isEspaco(caracterAtual) || isDigito(caracterAtual) || isLetra(caracterAtual) || caracterAtual == '\"') {
                         estado = 10;
                         retroceder();
-                    } else if ((lexema.equals("/") && caracterAtual == '*') || (lexema.equals("*") && caracterAtual == '/')) {
+                    } else if ((lexema.toString().equals("/") && caracterAtual == '*') || (lexema.toString().equals("*") && caracterAtual == '/')) {
                         estado = 0;
-                        lexema += caracterAtual;
+                        lexema.append(caracterAtual);
                     } else {
                         throw new LexicoException("Operador aritmético não reconhecido");
                     }
@@ -162,13 +163,13 @@ public class ES_Arquivo {
                 case 10:
                     registroLexico = new RegistroLexico();
                     registroLexico.setToken(RegistroLexico.TK_OP_ARITIMETICO);
-                    registroLexico.setLexema(lexema);
+                    registroLexico.setLexema(lexema.toString());
                     retroceder();
                     return registroLexico;
                 case 11:
                     registroLexico = new RegistroLexico();
                     registroLexico.setToken(RegistroLexico.TK_PONTUACAO);
-                    registroLexico.setLexema(lexema);
+                    registroLexico.setLexema(lexema.toString());
                     retroceder();
                     return registroLexico;
             }
