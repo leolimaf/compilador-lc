@@ -13,7 +13,7 @@ public class AnalisadorLexico {
     }
 
     /* TODO IDENTIFICAR ULTIMO REGISTRO LEXICO */
-    public RegistroLexico obterRegistroLexico() throws Exception{
+    public RegistroLexico obterRegistroLexico(){
         char caracterAtual;
         RegistroLexico registroLexico;
         StringBuilder lexema = new StringBuilder();
@@ -59,7 +59,7 @@ public class AnalisadorLexico {
                         if (caracterAtual == '\"') {
                             estado = 0;
                         } else {
-                            estado = 11;
+                            estado = 12;
                         }
                         lexema.append(caracterAtual);
                     } else if (isEspaco(caracterAtual)) {
@@ -73,7 +73,13 @@ public class AnalisadorLexico {
                         estado = 1;
                         lexema.append(caracterAtual);
                     } else if (isEspaco(caracterAtual) || isOperador(caracterAtual) || isPontuacao(caracterAtual) || isComentario(caracterAtual)) {
-                        estado = 2;
+                        if (lexema.toString().equals("true") || lexema.toString().equals("false")){
+                            estado = 4;
+                        } else if (lexema.toString().equals("and") || lexema.toString().equals("or") || lexema.toString().equals("not")){
+                            estado = 11;
+                        } else{
+                            estado = 2;
+                        }
                         retroceder();
                     } else {
                         throw new AnaliseLexicaException("Símbolo não reconhecido");
@@ -153,6 +159,12 @@ public class AnalisadorLexico {
                     retroceder();
                     return registroLexico;
                 case 11:
+                    registroLexico = new RegistroLexico();
+                    registroLexico.setToken(RegistroLexico.TK_OP_LOGICO);
+                    registroLexico.setLexema(lexema.toString());
+                    retroceder();
+                    return registroLexico;
+                case 12:
                     registroLexico = new RegistroLexico();
                     registroLexico.setToken(RegistroLexico.TK_PONTUACAO);
                     registroLexico.setLexema(lexema.toString());

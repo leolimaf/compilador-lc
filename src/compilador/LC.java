@@ -1,4 +1,6 @@
-package compilador.main;
+package compilador;
+
+import compilador.Compilador;
 
 public class LC {
 

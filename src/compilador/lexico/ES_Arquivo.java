@@ -7,7 +7,6 @@ public class ES_Arquivo {
 
     public static AnalisadorLexico abreArquivoEntrada(String nomeArqEntrada) throws Exception {
         String conteudo = Files.readString(Paths.get(nomeArqEntrada));
-        conteudo.toCharArray();
         return new AnalisadorLexico(conteudo);
     }
 
