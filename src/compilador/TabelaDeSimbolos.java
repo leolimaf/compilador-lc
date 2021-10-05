@@ -2,23 +2,20 @@ package compilador;
 
 import compilador.lexico.RegistroLexico;
 
-import java.util.HashMap;
 import java.util.Hashtable;
 
 public class TabelaDeSimbolos {
 
     private final int TAM_MAX = 256;
-    private HashMap<Integer, String> tabSimbolos;
-    private Hashtable<Integer, RegistroLexico> hashtable;
+    private Hashtable<Integer, String> tabSimbolos;
 
     public TabelaDeSimbolos() {
-        hashtable = new Hashtable();
+        tabSimbolos = new Hashtable();
 
         carregarTabelaDeSimbolos();
     }
 
     private void carregarTabelaDeSimbolos() {
-        tabSimbolos = new HashMap();
         tabSimbolos.put(0, "id");
         tabSimbolos.put(1, "const");
         tabSimbolos.put(2, "final");
@@ -31,13 +28,24 @@ public class TabelaDeSimbolos {
         tabSimbolos.put(9, "and");
         tabSimbolos.put(10, "or");
         tabSimbolos.put(11, "not");
-        tabSimbolos.put(12, "begin");
-        tabSimbolos.put(13, "end");
-        tabSimbolos.put(14, "readln");
-        tabSimbolos.put(15, "write");
-        tabSimbolos.put(16, "writeln");
-        tabSimbolos.put(17, "true");
-        tabSimbolos.put(18, "false");
-        tabSimbolos.put(19, "boolean");
+        tabSimbolos.put(12, ";");
+        tabSimbolos.put(13, "begin");
+        tabSimbolos.put(14, "end");
+        tabSimbolos.put(15, "readln");
+        tabSimbolos.put(16, "write");
+        tabSimbolos.put(17, "writeln");
+        tabSimbolos.put(18, "true");
+        tabSimbolos.put(19, "false");
+        tabSimbolos.put(20, "boolean");
     }
+
+    public void insereSimbolo(){
+
+    }
+
+    public boolean pesquisaSimbolo(int num) {
+        return tabSimbolos.contains(num);
+    }
+
+
 }

@@ -1,5 +1,7 @@
 package compilador.lexico;
 
+import java.util.Objects;
+
 public class RegistroLexico {
 
     public static final int TK_IDENTIFICADOR = 0;
@@ -52,5 +54,18 @@ public class RegistroLexico {
                 "token=" + token +
                 ", lexema='" + lexema + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RegistroLexico that = (RegistroLexico) o;
+        return token == that.token && lexema.equals(that.lexema);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(token, lexema);
     }
 }
