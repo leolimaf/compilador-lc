@@ -59,7 +59,7 @@ public class TabelaDeSimbolos {
     }
 
     public boolean contemSimbolo(String lexema) {
-        return tabSimbolos.contains(obterToken(lexema));
+        return tabSimbolos.containsValue(lexema);
     }
 
     public int obterToken(String lexema){

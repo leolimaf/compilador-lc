@@ -87,7 +87,7 @@ public class AnalisadorLexico {
                     break;
                 case 2:
                     registroLexico = new RegistroLexico();
-                    if (!tabelaDeSimbolos.contemSimbolo(lexema.toString())){
+                    if (tabelaDeSimbolos.contemSimbolo(lexema.toString())){
                         registroLexico.setToken(tabelaDeSimbolos.obterToken(lexema.toString()));
                     } else {
                         registroLexico.setToken(0);
@@ -108,12 +108,7 @@ public class AnalisadorLexico {
                     break;
                 case 4:
                     registroLexico = new RegistroLexico();
-                    if (!tabelaDeSimbolos.contemSimbolo(lexema.toString()) && !isString){
-                        registroLexico.setToken(tabelaDeSimbolos.obterToken(lexema.toString()));
-                    } else {
-                        registroLexico.setToken(1);
-                        isString = false;
-                    }
+                    registroLexico.setToken(1);
                     registroLexico.setLexema(lexema.toString());
                     retroceder();
                     return registroLexico;
