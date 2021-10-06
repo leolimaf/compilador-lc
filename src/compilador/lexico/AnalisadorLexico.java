@@ -9,12 +9,13 @@ public class AnalisadorLexico {
     private int estado;
     private int posicao;
     private boolean isString;
-    private  int linha; // TODO VERIFICAR COMO OBTER A LINHA
+    private  int linha;
     private TabelaDeSimbolos tabelaDeSimbolos;
 
     public AnalisadorLexico(String conteudo, TabelaDeSimbolos tabelaDeSimbolos) {
         this.itensConteudo = conteudo.toCharArray();
         this.tabelaDeSimbolos = tabelaDeSimbolos;
+        this.linha = 1;
     }
 
     /* TODO IDENTIFICAR ULTIMO REGISTRO LEXICO */
@@ -42,7 +43,7 @@ public class AnalisadorLexico {
                         estado = 4;
                     } else if (lexema.toString().startsWith("\"")) {
                         if (caracterAtual == '\n'){
-                            throw new AnaliseLexicaException("Strings não podem conter quebras de linha");
+                            throw new AnaliseLexicaException("Linha " + linha + ", Strings não podem conter quebras de linha");
                         }
                         estado = 0;
                         lexema.append(caracterAtual);
@@ -56,22 +57,22 @@ public class AnalisadorLexico {
                         estado = 5;
                         lexema.append(caracterAtual);
                     } else if (isOperadorRelacional(caracterAtual)) {
-                        estado = 8;
+                        estado = 6;
                         lexema.append(caracterAtual);
                     } else if (isOperadorAritmetico(caracterAtual)) {
-                        estado = 9;
+                        estado = 7;
                         lexema.append(caracterAtual);
                     } else if (isPontuacao(caracterAtual)) {
                         if (caracterAtual == '\"') {
                             estado = 0;
                         } else {
-                            estado = 12;
+                            estado = 8;
                         }
                         lexema.append(caracterAtual);
                     } else if (isEspaco(caracterAtual)) {
                         estado = 0;
                     } else{
-                        throw new AnaliseLexicaException("Símbolo não reconhecido");
+                        throw new AnaliseLexicaException("Símbolo não reconhecido na linha " + linha);
                     }
                     break;
                 case 1:
@@ -82,7 +83,7 @@ public class AnalisadorLexico {
                         estado = 2;
                         retroceder();
                     } else {
-                        throw new AnaliseLexicaException("Símbolo não reconhecido");
+                        throw new AnaliseLexicaException("Símbolo não reconhecido na linha " + linha);
                     }
                     break;
                 case 2:
@@ -93,6 +94,7 @@ public class AnalisadorLexico {
                         registroLexico.setToken(0);
                     }
                     registroLexico.setLexema(lexema.toString());
+                    registroLexico.setLinha(linha);
                     retroceder();
                     return registroLexico;
                 case 3:
@@ -103,75 +105,53 @@ public class AnalisadorLexico {
                         estado = 4;
                         retroceder();
                     } else {
-                        throw new AnaliseLexicaException("Número não reconhecido");
+                        throw new AnaliseLexicaException("Número não reconhecido na linha " + linha);
                     }
                     break;
                 case 4:
                     registroLexico = new RegistroLexico();
                     registroLexico.setToken(1);
                     registroLexico.setLexema(lexema.toString());
+                    registroLexico.setLinha(linha);
                     retroceder();
                     return registroLexico;
                 case 5:
                     if (isOperadorAtribuicao(caracterAtual)) {
-                        estado = 7;
+                        estado = 8;
                         lexema.append(caracterAtual);
                     } else if (isEspaco(caracterAtual) || isDigito(caracterAtual) || isLetra(caracterAtual)) {
-                        estado = 6;
+                        estado = 8;
                         retroceder();
                     } else {
-                        throw new AnaliseLexicaException("Operador de atribuição não reconhecido");
+                        throw new AnaliseLexicaException("Operador de atribuição não reconhecido na linha " + linha);
                     }
                     break;
                 case 6:
-                    registroLexico = new RegistroLexico();
-                    registroLexico.setToken(tabelaDeSimbolos.obterToken(lexema.toString()));
-                    registroLexico.setLexema(lexema.toString());
-                    retroceder();
-                    return registroLexico;
-                case 7:
-                    registroLexico = new RegistroLexico();
-                    registroLexico.setToken(tabelaDeSimbolos.obterToken(lexema.toString()));
-                    registroLexico.setLexema(lexema.toString());
-                    retroceder();
-                    return registroLexico;
-                case 8:
                     if (isEspaco(caracterAtual) || isDigito(caracterAtual) || isLetra(caracterAtual)) {
-                        estado = 7;
+                        estado = 8;
                     } else if (isOperadorAtribuicao(caracterAtual) || (lexema.toString().equals("<") && caracterAtual == '>')) {
-                        estado = 7;
+                        estado = 8;
                         lexema.append(caracterAtual);
                     } else {
-                        throw new AnaliseLexicaException("Operador relacional não reconhecido");
+                        throw new AnaliseLexicaException("Operador relacional não reconhecido na linha " + linha);
                     }
                     break;
-                case 9:
+                case 7:
                     if (isEspaco(caracterAtual) || isDigito(caracterAtual) || isLetra(caracterAtual) || caracterAtual == '\"') {
-                        estado = 10;
+                        estado = 8;
                         retroceder();
                     } else if ((lexema.toString().equals("/") && caracterAtual == '*') || (lexema.toString().equals("*") && caracterAtual == '/')) {
                         estado = 0;
                         lexema.append(caracterAtual);
                     } else {
-                        throw new AnaliseLexicaException("Operador aritmético não reconhecido");
+                        throw new AnaliseLexicaException("Operador aritmético não reconhecido na linha " + linha);
                     }
                     break;
-                case 10:
+                case 8:
                     registroLexico = new RegistroLexico();
                     registroLexico.setToken(tabelaDeSimbolos.obterToken(lexema.toString()));
                     registroLexico.setLexema(lexema.toString());
-                    retroceder();
-                    return registroLexico;
-                case 11:
-                    registroLexico = new RegistroLexico();
-                    registroLexico.setToken(tabelaDeSimbolos.obterToken(lexema.toString()));
-                    registroLexico.setLexema(lexema.toString());
-                    retroceder();
-                    return registroLexico;
-                case 12:
-                    registroLexico = new RegistroLexico();
-                    registroLexico.setToken(tabelaDeSimbolos.obterToken(lexema.toString()));
-                    registroLexico.setLexema(lexema.toString());
+                    registroLexico.setLinha(linha);
                     retroceder();
                     return registroLexico;
             }
@@ -213,6 +193,9 @@ public class AnalisadorLexico {
     }
 
     private boolean isEspaco(char c) {
+        if (c == '\n'){
+            linha++;
+        }
         return c == ' ' || c == '\t' || c == '\n' || c == '\r';
     }
 

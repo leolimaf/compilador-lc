@@ -15,6 +15,7 @@ public class RegistroLexico {
 
     private int token;
     private String lexema;
+    private int linha;
 
     public RegistroLexico() {
     }
@@ -38,6 +39,14 @@ public class RegistroLexico {
 
     public void setLexema(String lexema) {
         this.lexema = lexema;
+    }
+
+    public int getLinha() {
+        return linha;
+    }
+
+    public void setLinha(int linha) {
+        this.linha = linha;
     }
 
     @Override
