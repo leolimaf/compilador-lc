@@ -1,5 +1,6 @@
 package compilador.lexico;
 
+import compilador.TabelaDeSimbolos;
 import compilador.erros.AnaliseLexicaException;
 
 public class AnalisadorLexico {
@@ -7,9 +8,13 @@ public class AnalisadorLexico {
     private char[] itensConteudo;
     private int estado;
     private int posicao;
+    private boolean isString;
+    private  int linha; // TODO VERIFICAR COMO OBTER A LINHA
+    private TabelaDeSimbolos tabelaDeSimbolos;
 
-    public AnalisadorLexico(String conteudo) {
+    public AnalisadorLexico(String conteudo, TabelaDeSimbolos tabelaDeSimbolos) {
         this.itensConteudo = conteudo.toCharArray();
+        this.tabelaDeSimbolos = tabelaDeSimbolos;
     }
 
     /* TODO IDENTIFICAR ULTIMO REGISTRO LEXICO */
@@ -33,6 +38,7 @@ public class AnalisadorLexico {
                         lexema.append(caracterAtual);
                     } else if (lexema.toString().startsWith("\"") && lexema.toString().endsWith("\"") && lexema.length() > 1) {
                         retroceder();
+                        isString = true;
                         estado = 4;
                     } else if (lexema.toString().startsWith("\"")) {
                         if (caracterAtual == '\n'){
@@ -73,13 +79,7 @@ public class AnalisadorLexico {
                         estado = 1;
                         lexema.append(caracterAtual);
                     } else if (isEspaco(caracterAtual) || isOperador(caracterAtual) || isPontuacao(caracterAtual) || isComentario(caracterAtual)) {
-                        if (lexema.toString().equals("true") || lexema.toString().equals("false")){
-                            estado = 4;
-                        } else if (lexema.toString().equals("and") || lexema.toString().equals("or") || lexema.toString().equals("not")){
-                            estado = 11;
-                        } else{
-                            estado = 2;
-                        }
+                        estado = 2;
                         retroceder();
                     } else {
                         throw new AnaliseLexicaException("Símbolo não reconhecido");
@@ -87,7 +87,11 @@ public class AnalisadorLexico {
                     break;
                 case 2:
                     registroLexico = new RegistroLexico();
-                    registroLexico.setToken(RegistroLexico.TK_IDENTIFICADOR);
+                    if (!tabelaDeSimbolos.contemSimbolo(lexema.toString())){
+                        registroLexico.setToken(tabelaDeSimbolos.obterToken(lexema.toString()));
+                    } else {
+                        registroLexico.setToken(0);
+                    }
                     registroLexico.setLexema(lexema.toString());
                     retroceder();
                     return registroLexico;
@@ -104,7 +108,12 @@ public class AnalisadorLexico {
                     break;
                 case 4:
                     registroLexico = new RegistroLexico();
-                    registroLexico.setToken(RegistroLexico.TK_CONSTANTE);
+                    if (!tabelaDeSimbolos.contemSimbolo(lexema.toString()) && !isString){
+                        registroLexico.setToken(tabelaDeSimbolos.obterToken(lexema.toString()));
+                    } else {
+                        registroLexico.setToken(1);
+                        isString = false;
+                    }
                     registroLexico.setLexema(lexema.toString());
                     retroceder();
                     return registroLexico;
@@ -121,13 +130,13 @@ public class AnalisadorLexico {
                     break;
                 case 6:
                     registroLexico = new RegistroLexico();
-                    registroLexico.setToken(RegistroLexico.TK_OP_ATRIBUICAO);
+                    registroLexico.setToken(tabelaDeSimbolos.obterToken(lexema.toString()));
                     registroLexico.setLexema(lexema.toString());
                     retroceder();
                     return registroLexico;
                 case 7:
                     registroLexico = new RegistroLexico();
-                    registroLexico.setToken(RegistroLexico.TK_OP_RELACIONAL);
+                    registroLexico.setToken(tabelaDeSimbolos.obterToken(lexema.toString()));
                     registroLexico.setLexema(lexema.toString());
                     retroceder();
                     return registroLexico;
@@ -154,19 +163,19 @@ public class AnalisadorLexico {
                     break;
                 case 10:
                     registroLexico = new RegistroLexico();
-                    registroLexico.setToken(RegistroLexico.TK_OP_ARITIMETICO);
+                    registroLexico.setToken(tabelaDeSimbolos.obterToken(lexema.toString()));
                     registroLexico.setLexema(lexema.toString());
                     retroceder();
                     return registroLexico;
                 case 11:
                     registroLexico = new RegistroLexico();
-                    registroLexico.setToken(RegistroLexico.TK_OP_LOGICO);
+                    registroLexico.setToken(tabelaDeSimbolos.obterToken(lexema.toString()));
                     registroLexico.setLexema(lexema.toString());
                     retroceder();
                     return registroLexico;
                 case 12:
                     registroLexico = new RegistroLexico();
-                    registroLexico.setToken(RegistroLexico.TK_PONTUACAO);
+                    registroLexico.setToken(tabelaDeSimbolos.obterToken(lexema.toString()));
                     registroLexico.setLexema(lexema.toString());
                     retroceder();
                     return registroLexico;

@@ -4,14 +4,6 @@ import java.util.Objects;
 
 public class RegistroLexico {
 
-    public static final int TK_IDENTIFICADOR = 0;
-    public static final int TK_CONSTANTE = 1;
-    public static final int TK_OP_ATRIBUICAO = 2;
-    public static final int TK_OP_RELACIONAL = 3;
-    public static final int TK_OP_ARITIMETICO = 4;
-    public static final int TK_OP_LOGICO = 5;
-    public static final int TK_PONTUACAO = 6;
-
     public static final String TOKENS_TEXT[] = {
             "identificador",
             "constante",
