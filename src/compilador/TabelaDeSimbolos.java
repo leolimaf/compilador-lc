@@ -1,17 +1,15 @@
 package compilador;
 
-import compilador.lexico.RegistroLexico;
-
 import java.util.Hashtable;
 import java.util.Map;
 
 public class TabelaDeSimbolos {
 
-    private final int TAM_MAX = 256;
-    private Hashtable<Integer, String> tabSimbolos;
+    private static final int TAM_MAX = 256;
+    private static Hashtable<Integer, String> tabSimbolos = new Hashtable();
+
 
     public TabelaDeSimbolos() {
-        tabSimbolos = new Hashtable();
 
         carregarTabelaDeSimbolos();
     }
@@ -54,15 +52,11 @@ public class TabelaDeSimbolos {
         tabSimbolos.put(34, "boolean");
     }
 
-    public void insereSimbolo(){
-
-    }
-
-    public boolean contemSimbolo(String lexema) {
+    public static boolean contemSimbolo(String lexema) {
         return tabSimbolos.containsValue(lexema);
     }
 
-    public int obterToken(String lexema){
+    public static int obterToken(String lexema){
         int key = -1;
         for (Map.Entry entry: tabSimbolos.entrySet()) {
             if(lexema.equals(entry.getValue())){

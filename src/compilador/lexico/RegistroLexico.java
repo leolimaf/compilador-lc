@@ -4,15 +4,6 @@ import java.util.Objects;
 
 public class RegistroLexico {
 
-    public static final String TOKENS_TEXT[] = {
-            "identificador",
-            "constante",
-            "operador de atribuição",
-            "operador relacional",
-            "operador aritmético",
-            "pontuação"
-    };
-
     private int token;
     private String lexema;
     private int linha;

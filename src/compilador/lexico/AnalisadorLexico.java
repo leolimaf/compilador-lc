@@ -8,7 +8,6 @@ public class AnalisadorLexico {
     private char[] itensConteudo;
     private int estado;
     private int posicao;
-    private boolean isString;
     private  int linha;
     private TabelaDeSimbolos tabelaDeSimbolos;
 
@@ -18,8 +17,11 @@ public class AnalisadorLexico {
         this.linha = 1;
     }
 
-    /* TODO IDENTIFICAR ULTIMO REGISTRO LEXICO */
-    public RegistroLexico obterRegistroLexico(){
+    public RegistroLexico obterProxRegistroLexico(){
+        return obterProxRegistroLexico(false);
+    }
+
+    public RegistroLexico obterProxRegistroLexico(boolean olheParaFrente){
         char caracterAtual;
         RegistroLexico registroLexico;
         StringBuilder lexema = new StringBuilder();
@@ -39,7 +41,6 @@ public class AnalisadorLexico {
                         lexema.append(caracterAtual);
                     } else if (lexema.toString().startsWith("\"") && lexema.toString().endsWith("\"") && lexema.length() > 1) {
                         retroceder();
-                        isString = true;
                         estado = 4;
                     } else if (lexema.toString().startsWith("\"")) {
                         if (caracterAtual == '\n'){
@@ -96,6 +97,7 @@ public class AnalisadorLexico {
                     registroLexico.setLexema(lexema.toString());
                     registroLexico.setLinha(linha);
                     retroceder();
+                    posicao = olheParaFrente ? posicao - lexema.length() : posicao;
                     return registroLexico;
                 case 3:
                     if (isDigito(caracterAtual)) {
@@ -114,6 +116,7 @@ public class AnalisadorLexico {
                     registroLexico.setLexema(lexema.toString());
                     registroLexico.setLinha(linha);
                     retroceder();
+                    posicao = olheParaFrente ? posicao - lexema.length() : posicao;
                     return registroLexico;
                 case 5:
                     if (isOperadorAtribuicao(caracterAtual)) {
@@ -153,6 +156,7 @@ public class AnalisadorLexico {
                     registroLexico.setLexema(lexema.toString());
                     registroLexico.setLinha(linha);
                     retroceder();
+                    posicao = olheParaFrente ? posicao - lexema.length() : posicao;
                     return registroLexico;
             }
         }
