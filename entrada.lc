@@ -1,1 +1,8 @@
-=-3;
+int id;
+int id = 2;
+int id = +2;
+int id = -3, id_2;
+int id = -5, id_2 = 1;
+int id = 5, id_2, id_3 = 3;
+int id, id_2, id_3;
+int id, id_2 = 8, id_3;

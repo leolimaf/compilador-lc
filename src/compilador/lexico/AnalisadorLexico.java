@@ -21,7 +21,7 @@ public class AnalisadorLexico {
         return obterProxRegistroLexico(false);
     }
 
-    public RegistroLexico obterProxRegistroLexico(boolean olheParaFrente){
+    public RegistroLexico obterProxRegistroLexico(boolean olhePraFrente){
         char caracterAtual;
         RegistroLexico registroLexico;
         StringBuilder lexema = new StringBuilder();
@@ -97,7 +97,7 @@ public class AnalisadorLexico {
                     registroLexico.setLexema(lexema.toString());
                     registroLexico.setLinha(linha);
                     retroceder();
-                    posicao = olheParaFrente ? posicao - lexema.length() : posicao;
+                    posicao = olhePraFrente ? posicao - lexema.length() : posicao;
                     return registroLexico;
                 case 3:
                     if (isDigito(caracterAtual)) {
@@ -116,7 +116,7 @@ public class AnalisadorLexico {
                     registroLexico.setLexema(lexema.toString());
                     registroLexico.setLinha(linha);
                     retroceder();
-                    posicao = olheParaFrente ? posicao - lexema.length() : posicao;
+                    posicao = olhePraFrente ? posicao - lexema.length() : posicao;
                     return registroLexico;
                 case 5:
                     if (isOperadorAtribuicao(caracterAtual)) {
@@ -156,7 +156,7 @@ public class AnalisadorLexico {
                     registroLexico.setLexema(lexema.toString());
                     registroLexico.setLinha(linha);
                     retroceder();
-                    posicao = olheParaFrente ? posicao - lexema.length() : posicao;
+                    posicao = olhePraFrente ? posicao - lexema.length() : posicao;
                     return registroLexico;
             }
         }

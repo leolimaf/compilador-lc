@@ -10,7 +10,6 @@ public class TabelaDeSimbolos {
 
 
     public TabelaDeSimbolos() {
-
         carregarTabelaDeSimbolos();
     }
 
