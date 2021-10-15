@@ -1,8 +1,6 @@
-int id;
-int id = 2;
-int id = +2;
-int id = -3, id_2;
-int id = -5, id_2 = 1;
-int id = 5, id_2, id_3 = 3;
-int id, id_2, id_3;
-int id, id_2 = 8, id_3;
+boolean id; boolean id = true;
+boolean id = false, id_2;
+boolean id = true, id_2 = true;
+boolean id = false, id_2, id_3 = true;
+boolean id, id_2, id_3;
+boolean id, id_2 = false, id_3;
