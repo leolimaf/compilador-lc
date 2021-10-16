@@ -122,7 +122,7 @@ public class AnalisadorLexico {
                     if (isOperadorAtribuicao(caracterAtual)) {
                         estado = 8;
                         lexema.append(caracterAtual);
-                    } else if (isEspaco(caracterAtual) || isDigito(caracterAtual) || isOperadorAritmetico(caracterAtual)) {
+                    } else if (isEspaco(caracterAtual) || isDigito(caracterAtual) || isOperadorAritmetico(caracterAtual) || caracterAtual == '"') {
                         estado = 8;
                         retroceder();
                     } else {

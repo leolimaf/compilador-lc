@@ -1,6 +1,5 @@
-boolean id; boolean id = true;
-boolean id = false, id_2;
-boolean id = true, id_2 = true;
-boolean id = false, id_2, id_3 = true;
-boolean id, id_2, id_3;
-boolean id, id_2 = false, id_3;
+final id = "teste";
+final id = -3;
+final id = 2;
+final id = true;
+final id = 3 > 2;
