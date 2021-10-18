@@ -43,7 +43,7 @@ public class AnalisadorSintatico {
                 || registroLexico.getToken() == TabelaDeSimbolos.obterToken("boolean")
                 || registroLexico.getToken() == TabelaDeSimbolos.obterToken("byte")
                 || registroLexico.getToken() == TabelaDeSimbolos.obterToken("string")
-                || registroLexico.getToken() == TabelaDeSimbolos.obterToken("final"))){
+                || registroLexico.getToken() == TabelaDeSimbolos.obterToken("final"))) {
             D();
             registroLexico = analisadorLexico.obterProxRegistroLexico();
         }
@@ -70,13 +70,13 @@ public class AnalisadorSintatico {
         identificador();
         operadorAtribuicao();
         registroLexico = analisadorLexico.obterProxRegistroLexico(true);
-        if (registroLexico.getLexema().contains("\"")){
+        if (registroLexico.getLexema().contains("\"")) {
             constanteString();
         } else if (registroLexico.getToken() == 1
                 || registroLexico.getToken() == 21
-                || registroLexico.getToken() == 22){
+                || registroLexico.getToken() == 22) {
             constanteNumerica();
-        } else if (registroLexico.getToken() == 32 || registroLexico.getToken() == 33){
+        } else if (registroLexico.getToken() == 32 || registroLexico.getToken() == 33) {
             verdadeiroOuFalso();
         } else {
             throw new AnaliseSintaticaException("Caracter inesperado na linha " + registroLexico.getLinha());
@@ -91,20 +91,20 @@ public class AnalisadorSintatico {
             operadorAtribuicao();
             constanteString();
             registroLexico = analisadorLexico.obterProxRegistroLexico(true);
-            if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(",")){
+            if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(",")) {
                 registroLexico = analisadorLexico.obterProxRegistroLexico();
                 atribuicaoString();
-            } else if(registroLexico.getToken() == TabelaDeSimbolos.obterToken(";")){
+            } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(";")) {
                 pontoeVirgula();
             } else {
                 throw new AnaliseSintaticaException("Caracter inesperado na linha " + registroLexico.getLinha());
             }
-        } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(",")){
+        } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(",")) {
             virgula();
             atribuicaoNumerica();
-        } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(";")){
+        } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(";")) {
             pontoeVirgula();
-        } else{
+        } else {
             throw new AnaliseSintaticaException("Caracter inesperado na linha " + registroLexico.getLinha());
         }
     }
@@ -121,22 +121,27 @@ public class AnalisadorSintatico {
         registroLexico = analisadorLexico.obterProxRegistroLexico(true);
         if (registroLexico.getToken() == TabelaDeSimbolos.obterToken("=")) {
             operadorAtribuicao();
-            verdadeiroOuFalso();
             registroLexico = analisadorLexico.obterProxRegistroLexico(true);
-            if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(",")){
+            if (registroLexico.getToken() == 0 || registroLexico.getToken() == 1) {
+                expressaoRelacional();
+            } else {
+                verdadeiroOuFalso();
+            }
+            registroLexico = analisadorLexico.obterProxRegistroLexico(true);
+            if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(",")) {
                 registroLexico = analisadorLexico.obterProxRegistroLexico();
                 atribuicaoBoolean();
-            } else if(registroLexico.getToken() == TabelaDeSimbolos.obterToken(";")){
+            } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(";")) {
                 pontoeVirgula();
             } else {
                 throw new AnaliseSintaticaException("Caracter inesperado na linha " + registroLexico.getLinha());
             }
-        }  else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(",")){
+        } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(",")) {
             virgula();
             atribuicaoBoolean();
-        } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(";")){
+        } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(";")) {
             pontoeVirgula();
-        } else{
+        } else {
             throw new AnaliseSintaticaException("Caracter inesperado na linha " + registroLexico.getLinha());
         }
 
@@ -156,20 +161,20 @@ public class AnalisadorSintatico {
             operadorAtribuicao();
             constanteNumerica();
             registroLexico = analisadorLexico.obterProxRegistroLexico(true);
-            if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(",")){
+            if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(",")) {
                 registroLexico = analisadorLexico.obterProxRegistroLexico();
                 atribuicaoNumerica();
-            } else if(registroLexico.getToken() == TabelaDeSimbolos.obterToken(";")){
+            } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(";")) {
                 pontoeVirgula();
             } else {
                 throw new AnaliseSintaticaException("Caracter inesperado na linha " + registroLexico.getLinha());
             }
-        } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(",")){
+        } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(",")) {
             virgula();
             atribuicaoNumerica();
-        } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(";")){
+        } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(";")) {
             pontoeVirgula();
-        } else{
+        } else {
             throw new AnaliseSintaticaException("Caracter inesperado na linha " + registroLexico.getLinha());
         }
     }
@@ -193,7 +198,7 @@ public class AnalisadorSintatico {
         if (registroLexico.getToken() != 1) {
             if (registroLexico.getToken() == TabelaDeSimbolos.obterToken("+") || registroLexico.getToken() == TabelaDeSimbolos.obterToken("-")) {
                 registroLexico = analisadorLexico.obterProxRegistroLexico();
-                if (registroLexico.getToken() != 1){
+                if (registroLexico.getToken() != 1) {
                     throw new AnaliseSintaticaException("Esperava-se por um valor numérico na linha " + registroLexico.getLinha());
                 }
             }
@@ -215,7 +220,72 @@ public class AnalisadorSintatico {
     }
 
     private void B() {
+        if (registroLexico != null && registroLexico.getToken() == TabelaDeSimbolos.obterToken("begin")) {
+            while (registroLexico != null && registroLexico.getToken() != TabelaDeSimbolos.obterToken("end")) {
+                C();
+                registroLexico = analisadorLexico.obterProxRegistroLexico();
+            }
+        } else {
+            throw new AnaliseSintaticaException("Esperava-se por bloco de comando");
+        }
+    }
 
+    private void C() {
+        registroLexico = analisadorLexico.obterProxRegistroLexico(true);
+        if (registroLexico != null) {
+            if (registroLexico.getToken() == TabelaDeSimbolos.obterToken("while")) {
+                repeticao();
+            } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken("if")) {
+                condicicao(); // TODO IMPLEMENTAR 
+            } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken("write")) {
+                write(); // TODO IMPLEMENTAR
+            } else {
+                throw new AnaliseSintaticaException("Esperava-se por comandos na linha " + registroLexico.getLinha());
+            }
+        } else {
+            throw new AnaliseSintaticaException("Bloco de comando não foi finalizado");
+        }
+    }
+
+    private void write() {
+        registroLexico = analisadorLexico.obterProxRegistroLexico();
+        if (registroLexico.getToken() != TabelaDeSimbolos.obterToken("write")) {
+            throw new AnaliseSintaticaException("Esperava-se por palavra reservada write na linha " + registroLexico.getLinha());
+        }
+    }
+
+    private void repeticao() {
+        registroLexico = analisadorLexico.obterProxRegistroLexico();
+        if (registroLexico.getToken() != TabelaDeSimbolos.obterToken("while")) {
+            throw new AnaliseSintaticaException("Esperava-se por palavra reservada while na linha " + registroLexico.getLinha());
+        }
+        expressaoRelacional();
+        registroLexico = analisadorLexico.obterProxRegistroLexico(true);
+        if (registroLexico != null && registroLexico.getToken() != TabelaDeSimbolos.obterToken("begin")) {
+            C();
+        } else {
+            B();
+        }
+    }
+
+    private void expressaoRelacional() {
+        registroLexico = analisadorLexico.obterProxRegistroLexico();
+        if (registroLexico.getToken() == 0 || registroLexico.getToken() == 1) {
+            registroLexico = analisadorLexico.obterProxRegistroLexico();
+            if (registroLexico.getToken() >= 15 && registroLexico.getToken() <= 20) {
+                registroLexico = analisadorLexico.obterProxRegistroLexico();
+                if (registroLexico.getToken() != 0 && registroLexico.getToken() != 1) {
+                    throw new AnaliseSintaticaException("Esperava-se por constante ou identificador na linha " + registroLexico.getLinha());
+                }
+            } else {
+                throw new AnaliseSintaticaException("Esperava-se por operador relacional na linha " + registroLexico.getLinha());
+            }
+        } else {
+            throw new AnaliseSintaticaException("Esperava-se por constante ou identificador na linha " + registroLexico.getLinha());
+        }
+    }
+
+    private void condicicao() {
     }
 
 }

@@ -1,5 +1,6 @@
-final id = "teste";
-final id = -3;
-final id = 2;
-final id = true;
-final id = 3 > 2;
+int x = 3;
+boolean y = 1 > 5;
+
+begin
+    while 3 > 2 write
+end
