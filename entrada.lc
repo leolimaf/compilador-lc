@@ -4,11 +4,13 @@ final z = true;
 
 begin
     while 3 > 2
+    begin
+        if x == y
         begin
-            if x == y
-                begin
-                    write, "Hello ";
-                    write, "World!";
-                end
-        end
+            write, "Hello ";
+            write, "World!";
+         end
+         if x >= 3 begin write, x; end
+         write, y;
+    end
 end

@@ -278,6 +278,7 @@ public class AnalisadorSintatico {
         } else {
             registroLexico = analisadorLexico.obterProxRegistroLexico();
             B();
+            registroLexico = analisadorLexico.obterProxRegistroLexico();
         }
     }
 
@@ -310,6 +311,7 @@ public class AnalisadorSintatico {
         } else {
             registroLexico = analisadorLexico.obterProxRegistroLexico();
             B();
+            registroLexico = analisadorLexico.obterProxRegistroLexico();
         }
 
     }
