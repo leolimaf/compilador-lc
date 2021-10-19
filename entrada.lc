@@ -3,5 +3,12 @@ boolean y = 1 > 5;
 final z = true;
 
 begin
-    while 3 > 2 write
+    while 3 > 2
+        begin
+            if x == y
+                begin
+                    write, "Hello ";
+                    write, "World!";
+                end
+        end
 end
