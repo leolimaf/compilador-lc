@@ -60,7 +60,7 @@ public class AnalisadorSintatico {
         } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken("string")) {
             atribuicaoString();
         } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken("final")) {
-            atribuicaoFinal(); // TODO FINALIZAR
+            atribuicaoFinal();
         } else {
             throw new AnaliseSintaticaException("Esperava-se por um tipo de dado na linha " + registroLexico.getLinha());
         }
@@ -70,8 +70,8 @@ public class AnalisadorSintatico {
         identificador();
         operadorAtribuicao();
         registroLexico = analisadorLexico.obterProxRegistroLexico(true);
-        if (registroLexico.getLexema().contains("\"")) {
-            constanteString();
+        if (registroLexico.getLexema().startsWith("\"")) {
+            constante();
         } else if (registroLexico.getToken() == 1
                 || registroLexico.getToken() == 21
                 || registroLexico.getToken() == 22) {
@@ -89,7 +89,7 @@ public class AnalisadorSintatico {
         registroLexico = analisadorLexico.obterProxRegistroLexico(true);
         if (registroLexico.getToken() == TabelaDeSimbolos.obterToken("=")) {
             operadorAtribuicao();
-            constanteString();
+            constante();
             registroLexico = analisadorLexico.obterProxRegistroLexico(true);
             if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(",")) {
                 registroLexico = analisadorLexico.obterProxRegistroLexico();
@@ -109,10 +109,10 @@ public class AnalisadorSintatico {
         }
     }
 
-    private void constanteString() {
+    private void constante() {
         registroLexico = analisadorLexico.obterProxRegistroLexico();
         if (registroLexico.getToken() != 1) {
-            throw new AnaliseSintaticaException("Esperava-se por uma constante de string na linha " + registroLexico.getLinha());
+            throw new AnaliseSintaticaException("Esperava-se por um valor constante na linha " + registroLexico.getLinha());
         }
     }
 

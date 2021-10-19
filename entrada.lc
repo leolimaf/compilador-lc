@@ -1,5 +1,6 @@
 int x = 3;
 boolean y = 1 > 5;
+final z = true;
 
 begin
     while 3 > 2 write
