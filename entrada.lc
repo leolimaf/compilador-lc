@@ -4,13 +4,18 @@ final z = true;
 
 begin
     while 3 > 2
-    begin
+        begin
+        if x >= 3 write, x; else write, "x < 3";
         if x == y
         begin
             write, "Hello ";
             write, "World!";
-         end
-         if x >= 3 begin write, x; end
-         write, y;
+        end
+        else
+        begin
+            write, "Olá ";
+            write, "Mundo!";
+        end
+        write, y;
     end
 end
