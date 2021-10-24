@@ -1,21 +1,40 @@
-int x = 3;
-boolean y = 1 > 5;
-final z = true;
+{ Declaração de variáveis e constantes }
+int nota, media, total, contador = 1;
+byte atividadesMultiplas;
+boolean aprovado = false;
+string calcularNovamente = "sim", nome;
+final notaMinima = 65;
 
+{ Bloco Principal }
 begin
-    while 3 > 2
+    while calcularNovamente == "sim"
+    begin
+        write, "Informe seu nome: ";
+        readln, nome;
+        while contador < 4
         begin
-        if x >= 3 write, x; else write, "x < 3";
-        if x == y
+            write, "Informe a nota da " contador "º prova:";
+            readln, nota;
+            if nota >= 0
+                total = total + nota;
+            contador = contador + 1;
+        end
+        write, "Informe a nota obtida no trabalho prático: ";
+        readln, nota;
+        if nota >= 0
+            total = total + nota;
+        media = total / contador;
+        if media >= notaMinima aprovado = true; else aprovado = false;
+        if aprovado == true
         begin
-            write, "Hello ";
-            write, "World!";
+            writeln, "Parabéns " nome ", você foi aprovado na disciplina de compiladores!";
         end
         else
         begin
-            write, "Olá ";
-            write, "Mundo!";
+            writeln "Reprovado :(";
+            writeln "Mas não se preocupe, você pode tentar denovo no próximo semestre...";
         end
-        write, y;
+        write, "Deseja calcular novamente? ";
+        readln, calcularNovamente;
     end
 end

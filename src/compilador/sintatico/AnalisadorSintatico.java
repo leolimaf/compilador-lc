@@ -20,7 +20,7 @@ import compilador.lexico.RegistroLexico;
  *   | while EXP (C | B)
  *   | if EXP (C | B) [else (C | B)]
  * EXP -> identificador | constante | operações aritméticas, relacionais e lógicas
- * EXPS ->
+ * EXPS -> {EXP}+
  * T ->
  * F ->
  *
@@ -154,7 +154,7 @@ public class AnalisadorSintatico {
         }
     }
 
-    private void atribuicaoNumerica() {
+    private void atribuicaoNumerica() { // TODO: ADICIONAR EXPRESSÃO ARITMÉTICA
         identificador();
         registroLexico = analisadorLexico.obterProxRegistroLexico(true);
         if (registroLexico.getToken() == TabelaDeSimbolos.obterToken("=")) {
@@ -241,14 +241,28 @@ public class AnalisadorSintatico {
                 if (registroLexico != null && registroLexico.getToken() == TabelaDeSimbolos.obterToken("else")){
                     seNao();
                 }
+            } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken("readln")) {
+                leia();
             } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken("write")) {
-                escreva(); // TODO MELHORAR
+                escreva();
+            } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken("writeln")) {
+                escrevaln();
             } else {
                 throw new AnaliseSintaticaException("Caracter inesperado na linha " + registroLexico.getLinha());
             }
         } else {
             throw new AnaliseSintaticaException("Bloco de comando não foi finalizado");
         }
+    }
+
+    private void leia() {
+        registroLexico = analisadorLexico.obterProxRegistroLexico();
+        if (registroLexico.getToken() != TabelaDeSimbolos.obterToken("readln")) {
+            throw new AnaliseSintaticaException("Esperava-se por palavra reservada readln na linha " + registroLexico.getLinha());
+        }
+        virgula();
+        identificador();
+        pontoeVirgula();
     }
 
     private void escreva() {
@@ -258,6 +272,22 @@ public class AnalisadorSintatico {
         }
         virgula();
         registroLexico = analisadorLexico.obterProxRegistroLexico(true);
+        listaDeExpressoes();
+        pontoeVirgula();
+    }
+
+    private void escrevaln() {
+        registroLexico = analisadorLexico.obterProxRegistroLexico();
+        if (registroLexico.getToken() != TabelaDeSimbolos.obterToken("writeln")) {
+            throw new AnaliseSintaticaException("Esperava-se por palavra reservada writeln na linha " + registroLexico.getLinha());
+        }
+        virgula();
+        registroLexico = analisadorLexico.obterProxRegistroLexico(true);
+        listaDeExpressoes();
+        pontoeVirgula();
+    }
+
+    private void listaDeExpressoes() { // TODO: ADICIONAR MAIS EXPRESSÕES
         if (registroLexico.getToken() == 0){
             identificador();
         } else if (registroLexico.getToken() == 1){
@@ -267,7 +297,10 @@ public class AnalisadorSintatico {
         } else {
             throw new AnaliseSintaticaException("Caracter inesperador na linha " + registroLexico.getLinha());
         }
-        pontoeVirgula();
+        registroLexico = analisadorLexico.obterProxRegistroLexico(true);
+        if (registroLexico.getToken() != TabelaDeSimbolos.obterToken(";")){
+            listaDeExpressoes();
+        }
     }
 
     private void enquanto() {
