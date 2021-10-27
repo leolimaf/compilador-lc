@@ -47,7 +47,7 @@ public class AnalisadorSintatico {
             D();
             registroLexico = analisadorLexico.obterProxRegistroLexico();
         }
-        B();
+        B(); //TODO: DETECTAR A LINHA CORRETAMENTE QUANDO TIVER COMENTÁRIO COM QUEBRAS DE LINHA
     }
 
     private void D() {
@@ -247,6 +247,10 @@ public class AnalisadorSintatico {
                 escreva();
             } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken("writeln")) {
                 escrevaln();
+            } else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken(";")) {
+                pontoeVirgula();
+            }  else if (registroLexico.getToken() == TabelaDeSimbolos.obterToken("id")) {
+                // atribuicao(); // TODO
             } else {
                 throw new AnaliseSintaticaException("Caracter inesperado na linha " + registroLexico.getLinha());
             }
@@ -299,6 +303,8 @@ public class AnalisadorSintatico {
         }
         registroLexico = analisadorLexico.obterProxRegistroLexico(true);
         if (registroLexico.getToken() != TabelaDeSimbolos.obterToken(";")){
+            virgula();
+            registroLexico = analisadorLexico.obterProxRegistroLexico(true);
             listaDeExpressoes();
         }
     }
@@ -325,7 +331,10 @@ public class AnalisadorSintatico {
             registroLexico = analisadorLexico.obterProxRegistroLexico();
             if (registroLexico.getToken() >= 15 && registroLexico.getToken() <= 20) {
                 registroLexico = analisadorLexico.obterProxRegistroLexico();
-                if (registroLexico.getToken() != 0 && registroLexico.getToken() != 1) {
+                if (registroLexico.getToken() != 0
+                        && registroLexico.getToken() != 1
+                        && registroLexico.getToken() != TabelaDeSimbolos.obterToken("true")
+                        && registroLexico.getToken() != TabelaDeSimbolos.obterToken("false")) {
                     throw new AnaliseSintaticaException("Esperava-se por constante ou identificador na linha " + registroLexico.getLinha());
                 }
             } else {
