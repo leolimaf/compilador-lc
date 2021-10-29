@@ -356,7 +356,7 @@ public class AnalisadorSintatico {
         }
     }
 
-    private void expressaoRelacional() { // TODO: IDENTIFICAR AND E OR
+    private void expressaoRelacional() {
         registroLexico = analisadorLexico.obterProxRegistroLexico();
         if (registroLexico.getToken() == 0 || registroLexico.getToken() == 1) {
             registroLexico = analisadorLexico.obterProxRegistroLexico();
@@ -368,11 +368,27 @@ public class AnalisadorSintatico {
                         && registroLexico.getToken() != TabelaDeSimbolos.obterToken("false")) {
                     throw new AnaliseSintaticaException("Esperava-se por constante ou identificador na linha " + registroLexico.getLinha());
                 }
+                registroLexico = analisadorLexico.obterProxRegistroLexico(true);
+                if (registroLexico.getToken() == TabelaDeSimbolos.obterToken("and")
+                        || registroLexico.getToken() == TabelaDeSimbolos.obterToken("or")
+                        || registroLexico.getToken() == TabelaDeSimbolos.obterToken("not")){
+                    operadorLogico();
+                    expressaoRelacional();
+                }
             } else {
                 throw new AnaliseSintaticaException("Esperava-se por operador relacional na linha " + registroLexico.getLinha());
             }
         } else {
             throw new AnaliseSintaticaException("Esperava-se por constante ou identificador na linha " + registroLexico.getLinha());
+        }
+    }
+
+    private void operadorLogico() {
+        registroLexico = analisadorLexico.obterProxRegistroLexico();
+        if (registroLexico.getToken() != TabelaDeSimbolos.obterToken("and")
+                && registroLexico.getToken() != TabelaDeSimbolos.obterToken("or")
+                && registroLexico.getToken() != TabelaDeSimbolos.obterToken("not")){
+            throw new AnaliseSintaticaException("Esperava-se por operador lógico na linha " + registroLexico.getLinha());
         }
     }
 
