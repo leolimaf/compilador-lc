@@ -15,13 +15,13 @@ begin
         begin
             write, "Informe a nota da ", contador, "º prova:";
             readln, nota;
-            if nota >= 0
+            if nota >= 0 and nota <= 30
                 total = total + nota;
             contador = contador + 1;
         end
         write, "Informe a nota obtida no trabalho prático: ";
         readln, nota;
-        if nota >= 0
+        if nota >= 0 and nota <= 10
             total = total + nota;
         media = total / contador;
         if media >= notaMinima aprovado = true; else aprovado = false;

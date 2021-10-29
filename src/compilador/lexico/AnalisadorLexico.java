@@ -33,6 +33,7 @@ public class AnalisadorLexico {
             switch (estado) {
                 case 0:
                     if (lexema.toString().startsWith("/*") && lexema.toString().endsWith("*/") || lexema.toString().startsWith("{") && lexema.toString().endsWith("}")) {
+                        linha += lexema.toString().chars().filter(c -> c == '\n').count();
                         lexema = new StringBuilder();
                         retroceder();
                     } else if (lexema.toString().startsWith("/*") || lexema.toString().endsWith("*/")) {

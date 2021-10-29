@@ -47,7 +47,7 @@ public class AnalisadorSintatico {
             D();
             registroLexico = analisadorLexico.obterProxRegistroLexico();
         }
-        B(); //TODO: DETECTAR A LINHA CORRETAMENTE QUANDO TIVER COMENTÁRIO COM QUEBRAS DE LINHA
+        B();
     }
 
     private void D() {
@@ -151,7 +151,7 @@ public class AnalisadorSintatico {
         }
     }
 
-    private void atribuicaoNumerica() { // TODO: ADICIONAR EXPRESSÃO ARITMÉTICA
+    private void atribuicaoNumerica() {
         identificador();
         registroLexico = analisadorLexico.obterProxRegistroLexico(true);
         if (registroLexico.getToken() == TabelaDeSimbolos.obterToken("=")) {
@@ -322,7 +322,7 @@ public class AnalisadorSintatico {
         pontoeVirgula();
     }
 
-    private void listaDeExpressoes() { // TODO: ADICIONAR MAIS EXPRESSÕES
+    private void listaDeExpressoes() {
         if (registroLexico.getToken() == 0) {
             identificador();
         } else if (registroLexico.getToken() == 1) {
@@ -356,7 +356,7 @@ public class AnalisadorSintatico {
         }
     }
 
-    private void expressaoRelacional() {
+    private void expressaoRelacional() { // TODO: IDENTIFICAR AND E OR
         registroLexico = analisadorLexico.obterProxRegistroLexico();
         if (registroLexico.getToken() == 0 || registroLexico.getToken() == 1) {
             registroLexico = analisadorLexico.obterProxRegistroLexico();
