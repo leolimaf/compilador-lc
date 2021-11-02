@@ -1,3 +1,9 @@
+/* Algoritmo: Aprovado ou Reprovado
+*  Função: Calcular a nota final dos alunos da EMGE e informar se foram aprovados ou não
+*  Autor: Leonardo Lima
+*  Data: 29/10/2021
+*/
+
 { Declaração de variáveis e constantes }
 int nota, media, total, contador = 1;
 byte atividadesMultiplas;
