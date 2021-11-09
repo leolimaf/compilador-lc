@@ -1,4 +1,4 @@
-package compilador.lexico;
+package compilador;
 
 import java.util.Objects;
 
@@ -6,6 +6,8 @@ public class RegistroLexico {
 
     private int token;
     private String lexema;
+    private String classe;
+    private String tipo;
     private int linha;
 
     public RegistroLexico() {
@@ -30,6 +32,22 @@ public class RegistroLexico {
 
     public void setLexema(String lexema) {
         this.lexema = lexema;
+    }
+
+    public String getClasse() {
+        return classe;
+    }
+
+    public void setClasse(String classe) {
+        this.classe = classe;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     public int getLinha() {

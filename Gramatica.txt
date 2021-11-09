@@ -1,0 +1,17 @@
+GRAMÁTICA DA LINGUAGEM
+
+S -> {D}* B
+D -> int id [=[+|-]const] {,id [=[+|-]const]}*;
+   | string id [=const] {,id [=const]}*;
+   | boolean id [=const] {,id [=const]}*;
+   | final id = [+|-]const;
+   | byte id [=[+|-]const] {,id [=[+|-]const]}*;
+B -> begin {C}* end
+C -> (write | writeln) {,EXP}+;
+  | readln, id;
+  | while EXP (C | B)
+  | if EXP (C | B) [else (C | B)]
+EXP -> operações aritméticas, relacionais e lógicas
+EXPS -> {EXP}+
+T -> identificador | constante
+F -> * | + | - | > | < | etc

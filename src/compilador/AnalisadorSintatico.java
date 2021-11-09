@@ -1,36 +1,17 @@
-package compilador.sintatico;
+package compilador;
 
-import compilador.TabelaDeSimbolos;
+import compilador.erros.AnaliseSemanticaException;
 import compilador.erros.AnaliseSintaticaException;
-import compilador.lexico.AnalisadorLexico;
-import compilador.lexico.RegistroLexico;
 
-/*
- * GRAMÁTICA DA LINGUAGEM
- *
- * S -> {D}* B
- * D -> int id [=[+|-]const] {,id [=[+|-]const]}*;
- *    | string id [=const] {,id [=const]}*;
- *    | boolean id [=const] {,id [=const]}*;
- *    | final id = [+|-]const;
- *    | byte id [=[+|-]const] {,id [=[+|-]const]}*;
- * B -> begin {C}* end
- * C -> (write | writeln) {,EXP}+;
- *   | readln, id;
- *   | while EXP (C | B)
- *   | if EXP (C | B) [else (C | B)]
- * EXP -> identificador | constante | operações aritméticas, relacionais e lógicas
- * EXPS -> {EXP}+
- * T ->
- * F ->
- *
- * */
+import java.util.ArrayList;
+import java.util.List;
 
 public class AnalisadorSintatico {
 
     private AnalisadorLexico analisadorLexico;
-    private RegistroLexico registroLexico;
+    private RegistroLexico registroLexico, aux = new RegistroLexico();
     private final String msgErro = "Caracter inesperado na linha ";
+    private List<RegistroLexico> identificadores = new ArrayList<>();
 
     public AnalisadorSintatico(AnalisadorLexico analisadorLexico) {
         this.analisadorLexico = analisadorLexico;
@@ -68,7 +49,13 @@ public class AnalisadorSintatico {
     }
 
     private void atribuicaoFinal() {
+        aux = analisadorLexico.obterProxRegistroLexico(true);
+        if (identificadores.contains(aux)){
+            throw new AnaliseSemanticaException("Identificador já declarado na linha " + aux.getLinha());
+        }
+        aux.setClasse("classe_final");
         atribuicao();
+        identificadores.add(aux);
         pontoeVirgula();
     }
 
@@ -99,6 +86,9 @@ public class AnalisadorSintatico {
 
     private void constante() {
         registroLexico = analisadorLexico.obterProxRegistroLexico();
+        if (registroLexico.getLexema().contains("\"")){
+            aux.setTipo(registroLexico.getTipo());
+        }
         if (registroLexico.getToken() == 1 || registroLexico.getToken() == 0) {
             registroLexico = analisadorLexico.obterProxRegistroLexico(true);
             if (registroLexico.getLexema().equals("+")
@@ -150,6 +140,7 @@ public class AnalisadorSintatico {
         if (!registroLexico.getLexema().equals("true") && !registroLexico.getLexema().equals("false")) {
             throw new AnaliseSintaticaException(msgErro + registroLexico.getLinha());
         }
+        aux.setTipo(registroLexico.getTipo());
     }
 
     private void atribuicaoNumerica() {
@@ -181,7 +172,7 @@ public class AnalisadorSintatico {
         registroLexico = analisadorLexico.obterProxRegistroLexico();
         if (registroLexico.getToken() != 0) {
             throw new AnaliseSintaticaException(msgErro + registroLexico.getLinha());
-        }
+        };
     }
 
     private void operadorAtribuicao() {
@@ -201,6 +192,7 @@ public class AnalisadorSintatico {
                 }
             }
         }
+        aux.setTipo(registroLexico.getTipo());
         registroLexico = analisadorLexico.obterProxRegistroLexico(true);
         if (registroLexico.getToken() <= 24 && registroLexico.getToken() >= 21) {
             operadorAritmetico();
@@ -278,14 +270,12 @@ public class AnalisadorSintatico {
         registroLexico = analisadorLexico.obterProxRegistroLexico(true);
         if (registroLexico.getLexema().startsWith("\"") || registroLexico.getToken() == 0) {
             constante();
-            pontoeVirgula();
         } else if (registroLexico.getToken() == 1
                 || registroLexico.getLexema().equals("+")
                 || registroLexico.getLexema().equals("-")) {
             constanteNumerica();
         } else if (registroLexico.getToken() == 32 || registroLexico.getToken() == 33) {
             verdadeiroOuFalso();
-            pontoeVirgula();
         } else {
             throw new AnaliseSintaticaException(msgErro + registroLexico.getLinha());
         }
@@ -402,6 +392,7 @@ public class AnalisadorSintatico {
         registroLexico = analisadorLexico.obterProxRegistroLexico(true);
         if (registroLexico != null && !registroLexico.getLexema().equals("begin")) {
             C();
+            pontoeVirgula();
             registroLexico = analisadorLexico.obterProxRegistroLexico(true);
             if (registroLexico != null && registroLexico.getLexema().equals("else")) {
                 seNao();

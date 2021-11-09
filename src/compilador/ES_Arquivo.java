@@ -1,6 +1,4 @@
-package compilador.lexico;
-
-import compilador.TabelaDeSimbolos;
+package compilador;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;

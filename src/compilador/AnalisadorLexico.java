@@ -1,6 +1,5 @@
-package compilador.lexico;
+package compilador;
 
-import compilador.TabelaDeSimbolos;
 import compilador.erros.AnaliseLexicaException;
 
 public class AnalisadorLexico {
@@ -96,6 +95,9 @@ public class AnalisadorLexico {
                         registroLexico.setToken(0);
                     }
                     registroLexico.setLexema(lexema.toString());
+                    if (registroLexico.getLexema().equals("true") || registroLexico.getLexema().equals("false")){
+                        registroLexico.setTipo("tipo_boolean");
+                    }
                     registroLexico.setLinha(linha);
                     retroceder();
                     posicao = olhePraFrente ? posicao - lexema.length() : posicao;
@@ -115,6 +117,16 @@ public class AnalisadorLexico {
                     registroLexico = new RegistroLexico();
                     registroLexico.setToken(1);
                     registroLexico.setLexema(lexema.toString());
+                    if (lexema.toString().contains("\"")){
+                        registroLexico.setTipo("tipo_string");
+                    } else{
+                        int aux = Integer.parseInt(lexema.toString());
+                        if (aux > 0 && aux < 255){
+                            registroLexico.setTipo("tipo_byte");
+                        } else {
+                            registroLexico.setTipo("tipo_int");
+                        }
+                    }
                     registroLexico.setLinha(linha);
                     retroceder();
                     posicao = olhePraFrente ? posicao - lexema.length() : posicao;
