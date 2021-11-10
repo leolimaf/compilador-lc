@@ -51,7 +51,7 @@ public class AnalisadorSintatico {
     private void atribuicaoFinal() {
         aux = analisadorLexico.obterProxRegistroLexico(true);
         if (identificadores.contains(aux)){
-            throw new AnaliseSemanticaException("Identificador já declarado na linha " + aux.getLinha());
+            throw new AnaliseSemanticaException("Identificador [" + aux.getLexema() + "] na linha " + aux.getLinha() + " já foi declarado");
         }
         aux.setClasse("classe_final");
         atribuicao();
@@ -60,8 +60,10 @@ public class AnalisadorSintatico {
     }
 
     private void atribuicaoString() {
-        identificador();
-        registroLexico = analisadorLexico.obterProxRegistroLexico(true);
+        if (registroLexico.getLexema().equals("string")){
+            aux.setTipo("tipo_string");
+        }
+        VerificarIdentificadorJaDeclarado();
         if (registroLexico.getLexema().equals("=")) {
             operadorAtribuicao();
             constante();
@@ -105,8 +107,10 @@ public class AnalisadorSintatico {
     }
 
     private void atribuicaoBoolean() {
-        identificador();
-        registroLexico = analisadorLexico.obterProxRegistroLexico(true);
+        if (registroLexico.getLexema().equals("boolean")){
+            aux.setTipo("tipo_boolean");
+        }
+        VerificarIdentificadorJaDeclarado();
         if (registroLexico.getLexema().equals("=")) {
             operadorAtribuicao();
             registroLexico = analisadorLexico.obterProxRegistroLexico(true);
@@ -144,8 +148,12 @@ public class AnalisadorSintatico {
     }
 
     private void atribuicaoNumerica() {
-        identificador();
-        registroLexico = analisadorLexico.obterProxRegistroLexico(true);
+        if (registroLexico.getLexema().equals("int")){
+            aux.setTipo("tipo_int");
+        } else if (registroLexico.getLexema().equals("byte")){
+            aux.setTipo("tipo_byte");
+        }
+        VerificarIdentificadorJaDeclarado();
         if (registroLexico.getLexema().equals("=")) {
             operadorAtribuicao();
             constanteNumerica();
@@ -166,6 +174,17 @@ public class AnalisadorSintatico {
         } else {
             throw new AnaliseSintaticaException(msgErro + registroLexico.getLinha());
         }
+    }
+
+    private void VerificarIdentificadorJaDeclarado() {
+        identificador();
+        if (identificadores.contains(registroLexico)){
+            throw new AnaliseSemanticaException("Identificador [" + registroLexico.getLexema() + "] na linha " + registroLexico.getLinha() + " já foi declarado");
+        }
+        identificadores.add(registroLexico);
+        registroLexico.setClasse("classe_var");
+        registroLexico.setTipo(aux.getTipo());
+        registroLexico = analisadorLexico.obterProxRegistroLexico(true);
     }
 
     private void identificador() {

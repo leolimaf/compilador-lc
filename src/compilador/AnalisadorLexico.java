@@ -96,6 +96,7 @@ public class AnalisadorLexico {
                     }
                     registroLexico.setLexema(lexema.toString());
                     if (registroLexico.getLexema().equals("true") || registroLexico.getLexema().equals("false")){
+                        registroLexico.setClasse("classe_valor");
                         registroLexico.setTipo("tipo_boolean");
                     }
                     registroLexico.setLinha(linha);
@@ -127,6 +128,7 @@ public class AnalisadorLexico {
                             registroLexico.setTipo("tipo_int");
                         }
                     }
+                    registroLexico.setClasse("classe_valor");
                     registroLexico.setLinha(linha);
                     retroceder();
                     posicao = olhePraFrente ? posicao - lexema.length() : posicao;
