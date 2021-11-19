@@ -25,6 +25,7 @@ public class LC {
 
             arquivo = "entrada.lc";
             new Compilador(arquivo, args[1]);
+            System.out.println("Compilação finalizada com sucesso!");
         } catch (Exception e){
             System.err.println("Erro: " + e.getMessage());
         }

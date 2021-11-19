@@ -97,7 +97,7 @@ public class AnalisadorLexico {
                     registroLexico.setLexema(lexema.toString());
                     if (registroLexico.getLexema().equals("true") || registroLexico.getLexema().equals("false")){
                         registroLexico.setClasse("classe_valor");
-                        registroLexico.setTipo("tipo_boolean");
+                        registroLexico.setTipo("tipo_logico");
                     }
                     registroLexico.setLinha(linha);
                     retroceder();

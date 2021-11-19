@@ -3,23 +3,37 @@ package compilador;
 import compilador.erros.AnaliseSemanticaException;
 import compilador.erros.AnaliseSintaticaException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AnalisadorSintatico {
+public class Parser {
 
     private AnalisadorLexico analisadorLexico;
     private RegistroLexico registroLexico, aux = new RegistroLexico();
     private final String msgErro = "Caracter inesperado na linha ";
     private List<RegistroLexico> identificadores = new ArrayList<>();
+    private Otimizador o;
+    private Memoria memoria;
+    private int endereco = memoria.contador;
 
-    public AnalisadorSintatico(AnalisadorLexico analisadorLexico) {
+    public Parser(AnalisadorLexico analisadorLexico) throws IOException {
         this.analisadorLexico = analisadorLexico;
+        o = new Otimizador();
+        memoria = new Memoria();
         S();
     }
 
     public void S() {
         registroLexico = analisadorLexico.obterProxRegistroLexico();
+        if (registroLexico != null){
+            o.buffer.add("sseg SEGMENT STACK ;início seg. pilha");
+            o.buffer.add("byte 4000h DUP(?) ;dimensiona pilha");
+            o.buffer.add("sseg ENDS ;fim seg. pilha");
+            o.buffer.add("dseg SEGMENT PUBLIC ;início seg. dados");
+            o.buffer.add("byte 4000h DUP(?) ;temporários");
+            endereco = memoria.alocarTemp();
+        }
         while (registroLexico != null
                 && (registroLexico.getLexema().equals("int")
                 || registroLexico.getLexema().equals("boolean")
@@ -60,13 +74,22 @@ public class AnalisadorSintatico {
     }
 
     private void atribuicaoString() {
+        String tipoAux = aux.getTipo();
+        aux = analisadorLexico.obterProxRegistroLexico(true);
         if (registroLexico.getLexema().equals("string")){
             aux.setTipo("tipo_string");
+        } else {
+            aux.setTipo(tipoAux);
         }
         VerificarIdentificadorJaDeclarado();
         if (registroLexico.getLexema().equals("=")) {
             operadorAtribuicao();
+            registroLexico = analisadorLexico.obterProxRegistroLexico(true);
+            if (registroLexico.getTipo() != null && !registroLexico.getTipo().equals("tipo_string")){
+                throw new AnaliseSemanticaException("Tipos incompatíveis na linha " + registroLexico.getLinha());
+            }
             constante();
+            alocarComValor(aux);
             registroLexico = analisadorLexico.obterProxRegistroLexico(true);
             if (registroLexico.getLexema().equals(",")) {
                 registroLexico = analisadorLexico.obterProxRegistroLexico();
@@ -77,9 +100,11 @@ public class AnalisadorSintatico {
                 throw new AnaliseSintaticaException(msgErro + registroLexico.getLinha());
             }
         } else if (registroLexico.getLexema().equals(",")) {
+            alocar(aux);
             virgula();
             atribuicaoNumerica();
         } else if (registroLexico.getLexema().equals(";")) {
+            alocar(aux);
             pontoeVirgula();
         } else {
             throw new AnaliseSintaticaException(msgErro + registroLexico.getLinha());
@@ -107,8 +132,12 @@ public class AnalisadorSintatico {
     }
 
     private void atribuicaoBoolean() {
+        String tipoAux = aux.getTipo();
+        aux = analisadorLexico.obterProxRegistroLexico(true);
         if (registroLexico.getLexema().equals("boolean")){
-            aux.setTipo("tipo_boolean");
+            aux.setTipo("tipo_logico");
+        } else {
+            aux.setTipo(tipoAux);
         }
         VerificarIdentificadorJaDeclarado();
         if (registroLexico.getLexema().equals("=")) {
@@ -119,6 +148,7 @@ public class AnalisadorSintatico {
             } else {
                 verdadeiroOuFalso();
             }
+            alocarComValor(aux);
             registroLexico = analisadorLexico.obterProxRegistroLexico(true);
             if (registroLexico.getLexema().equals(",")) {
                 registroLexico = analisadorLexico.obterProxRegistroLexico();
@@ -129,9 +159,11 @@ public class AnalisadorSintatico {
                 throw new AnaliseSintaticaException(msgErro + registroLexico.getLinha());
             }
         } else if (registroLexico.getLexema().equals(",")) {
+            alocar(aux);
             virgula();
             atribuicaoBoolean();
         } else if (registroLexico.getLexema().equals(";")) {
+            alocar(aux);
             pontoeVirgula();
         } else {
             throw new AnaliseSintaticaException(msgErro + registroLexico.getLinha());
@@ -148,14 +180,33 @@ public class AnalisadorSintatico {
     }
 
     private void atribuicaoNumerica() {
+        String tipoAux = aux.getTipo();
+        aux = analisadorLexico.obterProxRegistroLexico(true);
         if (registroLexico.getLexema().equals("int")){
-            aux.setTipo("tipo_int");
+            aux.setTipo("tipo_inteiro");
         } else if (registroLexico.getLexema().equals("byte")){
             aux.setTipo("tipo_byte");
+        } else {
+            aux.setTipo(tipoAux);
         }
         VerificarIdentificadorJaDeclarado();
         if (registroLexico.getLexema().equals("=")) {
             operadorAtribuicao();
+            registroLexico = analisadorLexico.obterProxRegistroLexico(true);
+            if (registroLexico.getTipo() != null
+                    && !registroLexico.getTipo().equals("tipo_inteiro")
+                    && !registroLexico.getTipo().equals("tipo_byte")
+                    && !registroLexico.getLexema().equals("-")){
+                throw new AnaliseSemanticaException("Tipos incompatíveis na linha " + registroLexico.getLinha());
+            }
+            if (registroLexico.getLexema().equals("-") && aux.getTipo().equals("tipo_inteiro")){
+                registroLexico = analisadorLexico.obterProxRegistroLexico();
+                registroLexico = analisadorLexico.obterProxRegistroLexico(true);
+                o.buffer.add("sword " + registroLexico.getLexema() + "; valor negativo " + aux.getLexema());
+                endereco = memoria.alocarInteiro();
+            } else {
+                alocarComValor(aux);
+            }
             constanteNumerica();
             registroLexico = analisadorLexico.obterProxRegistroLexico(true);
             if (registroLexico.getLexema().equals(",")) {
@@ -167,12 +218,57 @@ public class AnalisadorSintatico {
                 throw new AnaliseSintaticaException(msgErro + registroLexico.getLinha());
             }
         } else if (registroLexico.getLexema().equals(",")) {
+            alocar(aux);
             virgula();
             atribuicaoNumerica();
         } else if (registroLexico.getLexema().equals(";")) {
+            alocar(aux);
             pontoeVirgula();
         } else {
             throw new AnaliseSintaticaException(msgErro + registroLexico.getLinha());
+        }
+    }
+
+    private void alocar(RegistroLexico temp) {
+        switch(temp.getTipo()){
+            case "tipo_byte":
+                endereco = memoria.alocarByte();
+                o.buffer.add("byte ? ;byte " + temp.getLexema());
+                break;
+            case "tipo_logico":
+                endereco = memoria.alocarLogico();
+                o.buffer.add("byte ? ;logico " + temp.getLexema());
+                break;
+            case "tipo_inteiro":
+                endereco = memoria.alocarInteiro();
+                o.buffer.add("sword ? ;inteiro " + temp.getLexema());
+                break;
+            case "tipo_string":
+                endereco = memoria.alocarString();
+                o.buffer.add("byte 100h DUP(?) ;string " + temp.getLexema() + " em " + endereco);
+                break;
+        }
+    }
+
+    private void alocarComValor(RegistroLexico temp){
+        switch(temp.getTipo()){
+            case "tipo_byte":
+                o.buffer.add("byte " + registroLexico.getLexema() + "; valor positivo " + temp.getLexema());
+                endereco = memoria.alocarByte();
+                break;
+            case "tipo_logico":
+                String lexTemp = registroLexico.getLexema().equals("true") ? "0FFh" : "0h";
+                o.buffer.add("byte " + lexTemp + " ;logico " + temp.getLexema());
+                endereco = memoria.alocarLogico();
+                break;
+            case "tipo_inteiro":
+                o.buffer.add("sword " + registroLexico.getLexema() + "; valor positivo " + temp.getLexema());
+                endereco = memoria.alocarInteiro();
+                break;
+//            case "tipo_string":
+//                o.otimizador.add("byte " + registroLexico.getLexema(), s.getLexema().length() - 1) + "$" + s.getLexema().charAt(s.getLexema().length() - 1));
+//                endereco = memoria.alocarString(s.getLexema().length() - 1);
+//                break;
         }
     }
 
@@ -368,6 +464,9 @@ public class AnalisadorSintatico {
 
     private void expressaoRelacional() {
         registroLexico = analisadorLexico.obterProxRegistroLexico();
+        if (registroLexico.getTipo() != null && registroLexico.getTipo().equals("tipo_string")){
+            throw new AnaliseSemanticaException("Tipos incompatíveis na linha " + registroLexico.getLinha());
+        }
         if (registroLexico.getToken() == 0 || registroLexico.getToken() == 1) {
             registroLexico = analisadorLexico.obterProxRegistroLexico();
             if (registroLexico.getToken() >= 15 && registroLexico.getToken() <= 20) {
