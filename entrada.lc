@@ -6,37 +6,8 @@
 */
 
 { Declaração de variáveis e constantes }
-int nota, media, total, contador = 1;
-byte atividadesMultiplas;
-boolean aprovado = false;
-string nome;
-final notaMinima = 65;
 
 { Bloco Principal }
 begin
-    write, "Informe seu nome: ";
-    readln, nome;
-    while contador < 4
-    begin
-        write, "Informe a nota da ", contador, "º prova:";
-        readln, nota;
-        if nota >= 0
-            total = total + nota;
-        contador = contador + 1;
-    end
-    write, "Informe a nota obtida no trabalho prático: ";
-    readln, nota;
-    if nota >= 0
-        total = total + nota;
-    media = total / contador;
-    if media >= notaMinima aprovado = true; else aprovado = false;
-    if aprovado == true
-    begin
-        writeln, "Parabéns ", nome, ", você foi aprovado na disciplina de compiladores!";
-    end
-    else
-    begin
-        writeln, "Reprovado :(";
-        writeln, "Mas não se preocupe, você pode tentar denovo no próximo semestre...";
-    end
+    writeln, "Hello World!";
 end
